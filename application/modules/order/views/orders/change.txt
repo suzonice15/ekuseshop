@@ -1,0 +1,101 @@
+    Order controller
+	
+	public function update_closing_date()
+    {
+        $data = array(
+            'from_date' => $this->input->post('from_date'),
+            'to_date' => $this->input->post('to_date'),
+            'status' => $this->input->post('status')
+        );
+        $result = $this->MainModel->update_closing_time($data);
+        if ($result) {
+            echo "Closing date successfully added";
+        }
+    }
+	
+	    public function bill_closing()
+    {
+        $result = $this->MainModel->select_closing_date();
+        $from_date = $result->from_date;
+        $to_date = $result->to_date;
+        $status = $result->status;
+        $data['from_date'] = $from_date;
+        $data['to_date'] = $to_date;
+        $data['closing_status'] = $status;
+        $data['bill_closing'] = $this->MainModel->select_all_product_completed_list($from_date, $to_date);
+        $result = $this->MainModel->check_closing($from_date, $to_date, $status);
+        if ($result) {
+            $data['check_closing'] = $result->product_id;
+        } else {
+            $data['check_closing'] = 1;
+        }
+        $data['pageContent'] = $this->load->view('order/orders/bill_closing', $data, true);
+        $this->load->view('layouts/main', $data);
+    }
+
+    public function bill_closing_confirm()
+    {
+        $total_fields = $this->input->post('total_num_of_fields');
+        $user_id = $this->input->post('user_id');
+        $product_id = $this->input->post('product_id');
+        $commission = $this->input->post('commission');
+        $to_date = $this->input->post('to_date');
+        $closing_status = $this->input->post('closing_status');
+        for ($i = 0; $i < $total_fields; $i++) {
+            $data = array(
+                'user_id' => $user_id[$i],
+                'product_id' => $product_id[$i],
+                'commission' => $commission[$i],
+                'date' => $to_date[$i],
+                'status' => 2,
+                'closing_status' => $closing_status[$i]
+            );
+            $result = $this->MainModel->insertData('user_commission', $data);
+        }
+        if ($result) {
+            echo "Bill closing successfully.";
+        }
+    }
+	
+	
+	MainModel
+	
+	    public function select_all_product_completed_list($from_date, $to_date)
+    {
+        $this->db->select('sum(user_commission.commission) current_amount,user_commission.user_id,affiliate_users.user_f_name,affiliate_users.user_l_name');
+        $this->db->where('user_commission.status', 2);
+        $this->db->where('user_commission.closing_status', 0);
+        $this->db->where('date >=', $from_date);
+        $this->db->where('date <=', $to_date);
+        $this->db->join('affiliate_users', 'affiliate_users.user_id = user_commission.user_id');
+        $this->db->group_by('user_commission.user_id');
+        $query_result = $this->db->get('user_commission');
+        $result = $query_result->result();
+        return $result;
+    }
+
+    public function select_all_product_price($from_date, $to_date, $user_id)
+    {
+        $this->db->select('product.product_price,product.discount_price');
+        $this->db->where('user_commission.status', 2);
+        $this->db->where('user_commission.user_id', $user_id);
+        $this->db->where('user_commission.date >=', $from_date);
+        $this->db->where('user_commission.date <=', $to_date);
+        $this->db->join('product', 'product.product_id = user_commission.product_id');
+        $query_result = $this->db->get('user_commission');
+        $result = $query_result->result();
+        return $result;
+    }
+
+    public function check_closing($from_date, $to_date, $closing_status)
+    {
+        $this->db->select('product_id');
+        $this->db->where('status', 2);
+        $this->db->where('closing_status', $closing_status);
+        $this->db->where('product_id', 10000000);
+        $this->db->where('date >=', $from_date);
+        $this->db->where('date <=', $to_date);
+        $query_result = $this->db->get('user_commission');
+        $result = $query_result->row();
+        return $result;
+    }

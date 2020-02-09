@@ -1,0 +1,18 @@
+.step_closer {
+	top: 5px;
+right: 5px;
+width: 24px;
+height: 24px;
+position: absolute;
+cursor: pointer;
+text-shadow: 0 1px 0 #fff;
+font-size: 20px;
+line-height: 1;
+color: #fff;
+background: #d00;
+text-align: center;
+border-radius: 50%;
+}
+.relative {
+	position: relative;
+}

@@ -1,0 +1,619 @@
+<style>
+	.freepeoduct   {
+		background-image: url(https://static.ajkerdeal.com/images/flash-deal-percentage.png);
+		background-repeat: no-repeat;
+		width: 43px!important;
+		height: 43px!important;
+		overflow: hidden!important;
+		text-align: center!important;
+		float: right!important;
+		padding: 5px!important;
+		border-radius: 50px!important;
+		color: white!important;
+		font-size: 10px!important;
+		z-index: 99999999;
+		position: absolute;
+		right: 0;
+		top: 0px;
+	}
+
+</style>
+
+
+<?php
+$lang = get_langs();
+
+$base_url = base_url();
+$total_rows = total_products();
+$per_page = 56;
+$page = isset($_GET['per_page']) ? $_GET['per_page'] : 1;
+?>
+<link rel="stylesheet" href="<?php echo base_url();?>css/owl.carousel.min.css" />
+
+<?php
+$html='<section class="banner-slider">
+<hr class="break break30 desktop">
+<hr class="break break15 mobile">
+<div class="container">
+	<div id="bannerSlider" class="carousel slide" data-ride="carousel">
+		<div class="carousel-inner" role="listbox">';
+
+			$homeslider = get_homeslider();
+
+
+			if(count($homeslider)>0)
+			{
+			$indicators = '';
+
+			$i=0; foreach($homeslider as $slider)
+			{
+			$homeslider_banner = base_url().'images/slider.jpg';
+
+			if(strpos($slider->homeslider_banner, 'www') !== false || strpos($slider->homeslider_banner, 'http') !== false || strpos($slider->homeslider_banner, 'https') !== false)
+			{
+			$homeslider_banner = $slider->homeslider_banner;
+			}
+			else
+			{
+			if(file_exists($slider->homeslider_banner))
+			{
+			$homeslider_banner = base_url($slider->homeslider_banner);
+			}
+			}
+
+			$html.='<div class="item '.($i==0 ? 'active' : null).'">
+				<img src="'.$homeslider_banner.'" alt="'.$slider->homeslider_title.'">
+			</div>';
+
+			$indicators .= '<li data-target="#bannerSlider" data-slide-to="'.$i.'" class="'.($i==0 ? 'active' : null).'">&nbsp;</li>';
+
+			$i++;
+			}
+			}
+
+			$html.='<ol class="carousel-indicators">'.$indicators.'</ol>
+
+		</div>
+	</div>
+</div>
+</section>';
+
+echo $html;
+?>
+
+<hr class="break break30">
+
+<div class="tagcloud">
+	<div class="container">
+		<h2 class="section-title">
+			<?=isset($lang['product']) ? $lang['product'] : 'Product'?> <?=isset($lang['categories']) ? $lang['categories'] : 'Categories'?>
+		</h2>
+		<?php
+		$categories = get_result("SELECT * FROM `category` WHERE parent_id=0 ORDER BY rank_order ASC, category_id DESC");
+
+		if(isset($categories))
+		{
+			foreach($categories as $cat)
+			{
+				echo '<a href="'.base_url($cat->category_name).'">'.$cat->category_title.'</a>';
+		}
+		}
+		?>
+	</div>
+</div>
+
+<hr class="break break30">
+
+
+
+
+
+<style>
+	@media screen and (max-width: 767px) {
+		.owl-nav{
+			display: none;
+		}
+		.price-text {
+
+			font-weight: 600;
+			display: inline-block;
+			font-size: 10px !important;
+			color: #fff;
+			position: absolute;
+			bottom: 2px!important;
+			float: left;
+			background-color: #0089cf;
+			height: 16px !important;
+			border-top-left-radius: 60px;
+			border-bottom-left-radius: 60px;
+			width: 73px !important;
+			text-align: center;
+			right: 0;
+		}
+		.percentage-span-new {
+			background-image: url(./image/flash-deal-percentage.png);
+			background-repeat: no-repeat;
+			width: 35px !important;
+			height: 35px !important;
+			position: absolute !important;
+			bottom: 0 !important;
+			left: 1px !important;
+			background-size: 34px 34px !important;
+			text-align: center !important;
+			color: #fff !important;
+			font-weight: 500 !important;
+			font-size: 10px !important;
+			z-index: 2;
+		}
+		.percentage-amount-new {
+			font-size: 11px !important;;
+			font-weight: 500;
+			padding-left: 8px !important;;
+			padding-top: 9px !important;;
+			line-height: 1;
+			display: inline;
+		}
+		.percentage-sign-new {
+			font-size: 9px !important;;
+			padding-top: 8px !important;;
+		}
+		.percentage-discount-amount-new {
+			display: inline;
+			width: 100%;
+			font-size: 8px !important;;
+			padding: 0 !important;
+			margin: 0 !important;
+			line-height: 5px ;
+		}
+	}
+	.owl-next{
+		outline: none;
+	}
+
+	.product {
+
+	}
+	.owl-nav {
+		position: absolute;
+		top: 39%;
+		height: 0;
+		font-size: 29px;
+		width: 100%;
+	}
+	.owl-prev{
+		display: none;
+	}
+	.owl-next{
+		position: absolute;
+		right: -30px
+	}
+	.percentage-span-new {
+		background-image: url(./image/flash-deal-percentage.png);
+		background-repeat: no-repeat;
+		width: 45px;
+		height: 45px;
+		position: absolute;
+		bottom: 0;
+		left: 5px;
+		background-size: 44px 44px;
+		text-align: center;
+		color: #fff;
+		font-weight: 700;
+		font-size: 12px;
+		z-index: 2;
+	}
+	.percentage-amount-new, .percentage-discount-amount-new, .percentage-sign-new {
+		font-family: SolaimanLipi,Helvetica,Verdana,'Noto Sans Bengali';
+		color: #fff;
+		float: left;
+	}
+
+	.percentage-amount-new {
+		font-size: 15px;
+		font-weight: 700;
+		padding-left: 11px;
+		padding-top: 9px;
+		line-height: 1;
+		display: inline;
+	}
+	.percentage-sign-new {
+		font-size: 11px;
+		padding-top: 10px;
+	}
+	.percentage-discount-amount-new {
+		display: inline;
+		width: 100%;
+		font-size: 10px;
+		padding: 0 !important;
+		margin: 0 !important;
+		line-height: 7px;
+	}
+
+	.price-text {
+		font-weight: 600;
+		display: inline-block;
+		font-size: 16px;
+		color: #fff;
+		position: absolute;
+		bottom: 10px;
+		float: left;
+		background-color: #0089cf;
+		height: 23px;
+		border-top-left-radius: 60px;
+		border-bottom-left-radius: 60px;
+		width: 89px;
+		text-align: center;
+		right: 0;
+	}
+</style>
+
+<div class="container" >
+
+
+
+	<div class="row" style="margin-top:20px">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12  mobile-border-of" style="background: rgb(255, 239, 207);padding: 5px;">
+			<a href="#"><img style="width: 100px;margin-left:6px" src="https://static.ajkerdeal.com/images/deals/flash/hot-deal-logo.gif" title="kalerhaat.com" ></a>
+			<a href="<?php echo base_url()?>/hotdeals" class="pull-right"><img src="https://static.ajkerdeal.com/images/bangla.svg" style="margin-top: 6px;
+margin-right: 6px;" width="120" align="middle"></a>
+
+			<div class="col-lg-12 col-md-12 col-sm-12  col-xs-12" style="background: rgb(255, 239, 207);padding: 0px;margin-bottom: 20px;padding-top: 15px  " >
+				<div class="slider">
+					<ul class="product-category owl-carousel nav">
+
+						<?php
+           	$sql="SELECT * FROM `product`
+ WHERE  `product`.`product_type`=1";
+ 	$products = get_result($sql);
+
+
+			if(sizeof($products))
+			{
+				foreach($products as $prod)
+				{
+					$product_link = base_url($prod->product_name);
+
+						$product_availability = NULL;
+						$stock_qty = intval(get_product_meta($prod->product_id, 'stock_qty'));
+
+						if(!$stock_qty)
+						{
+						$product_availability = '<div class="availability">Out of Stock</div>';
+						}
+						elseif($stock_qty<=3)
+						{
+						$product_availability = '<div class="availability">Limited Stock</div>';
+						}
+
+						// product price and discount
+						$discount = false;
+
+						$product_price = $sell_price = floatval(get_product_meta($prod->product_id, 'sell_price'));
+
+						$product_discount = get_product_meta($prod->product_id, 'discount_price');
+						$discount_type = get_product_meta($prod->product_id, 'discount_type');
+
+						if($product_discount != 0)
+						{
+						$discount = true;
+
+						$product_discount = $save_money = floatval($product_discount);
+
+						if($discount_type == 'fixed')
+						{
+						$sell_price = ($product_price - $product_discount);
+						}
+						elseif($discount_type == 'percent')
+						{
+						$save_money = ($product_discount / 100) * $product_price;
+						$sell_price = floatval($product_price - $save_money);
+						}
+						}
+
+						$_product_title = strip_tags($prod->product_title);
+
+
+						$gallery_thumb = '';
+						$gallery_image_meta = get_product_meta($prod->product_id, 'gallery_image');
+						if(!empty($gallery_image_meta))
+						{
+						$gallery_image=explode(",", $gallery_image_meta);
+						if(count($gallery_image)>0)
+						{
+						$gallery_thumb = get_media_path($gallery_image[0]);
+						}
+						}
+						?>
+
+						<li  style=" border: 1px solid #e80a0a;" class="product">
+							<a href="<?=$product_link?>">
+								<?php
+                                   if($product_discount != 0)
+                                   {
+                                       $discount = true;
+
+                                       $product_discount = $save_money = floatval($product_discount);
+
+                                       if($discount_type == 'fixed')
+                                       {
+                                           $sell_price = ($product_price - $product_discount);
+
+                                           ?>
+								<div  class="freepeoduct">৳ <?=ceil($product_discount)?> ছাড়</div>
+								<?php
+                                       }
+                                       elseif($discount_type == 'percent')
+                                       {
+                                           $save_money = ($product_discount / 100) * $product_price;
+                                           $sell_price = floatval($product_price - $save_money);
+
+
+                                           ?>
+								<div class="freepeoduct" >৳ <?=ceil($save_money)?> ছাড়</div>
+								<?php
+
+                                       }
+                                   }
+                                   ?>
+								<span class="price-text">										<?=formatted_price($sell_price)?>
+</span>
+								<img src="<?=get_product_thumb($prod->product_id)?>" title="<?=$_product_title?>" alt="<?=$_product_title?>" data-src="<?=$gallery_thumb?>"/>
+							</a>
+						</li>
+
+						<?php
+                }
+            }
+                           ?>
+
+
+
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-lg-12 col-md-12 col-sm-12  col-xs-12" style="background: rgb(255, 239, 207);padding: 0px;margin-bottom: 20px;padding-top: 15px  " >
+				<div class="slider">
+					<ul class="product-category owl-carousel nav">
+
+						<?php
+                           $sql="SELECT * FROM `product`
+ WHERE  `product`.`product_type`=2";
+                           $products = get_result($sql);
+
+
+                           if(sizeof($products))
+                           {
+                               foreach($products as $prod)
+                               {
+                                   $product_link = base_url($prod->product_name);
+
+						$product_availability = NULL;
+						$stock_qty = intval(get_product_meta($prod->product_id, 'stock_qty'));
+
+						if(!$stock_qty)
+						{
+						$product_availability = '<div class="availability">Out of Stock</div>';
+						}
+						elseif($stock_qty<=3)
+						{
+						$product_availability = '<div class="availability">Limited Stock</div>';
+						}
+
+						// product price and discount
+						$discount = false;
+
+						$product_price = $sell_price = floatval(get_product_meta($prod->product_id, 'sell_price'));
+
+						$product_discount = get_product_meta($prod->product_id, 'discount_price');
+						$discount_type = get_product_meta($prod->product_id, 'discount_type');
+
+						if($product_discount != 0)
+						{
+						$discount = true;
+
+						$product_discount = $save_money = floatval($product_discount);
+
+						if($discount_type == 'fixed')
+						{
+						$sell_price = ($product_price - $product_discount);
+						}
+						elseif($discount_type == 'percent')
+						{
+						$save_money = ($product_discount / 100) * $product_price;
+						$sell_price = floatval($product_price - $save_money);
+						}
+						}
+
+						$_product_title = strip_tags($prod->product_title);
+
+
+						$gallery_thumb = '';
+						$gallery_image_meta = get_product_meta($prod->product_id, 'gallery_image');
+						if(!empty($gallery_image_meta))
+						{
+						$gallery_image=explode(",", $gallery_image_meta);
+						if(count($gallery_image)>0)
+						{
+						$gallery_thumb = get_media_path($gallery_image[0]);
+						}
+						}
+						?>
+
+						<li style=" border: 1px solid #e80a0a;" class="product">
+							<a href="<?=$product_link?>">
+								<?php
+                                           if($product_discount != 0)
+                                           {
+                                               $discount = true;
+
+                                               $product_discount = $save_money = floatval($product_discount);
+
+                                               if($discount_type == 'fixed')
+                                               {
+                                                   $sell_price = ($product_price - $product_discount);
+
+                                                   ?>
+								<div  class="freepeoduct">৳ <?=ceil($product_discount)?> ছাড়</div>
+								<?php
+                                               }
+                                               elseif($discount_type == 'percent')
+                                               {
+                                                   $save_money = ($product_discount / 100) * $product_price;
+                                                   $sell_price = floatval($product_price - $save_money);
+
+
+                                                   ?>
+								<div class="freepeoduct" >৳ <?=ceil($save_money)?> ছাড়</div>
+								<?php
+
+                                               }
+                                           }
+                                           ?>
+								<span class="price-text">										<?=formatted_price($sell_price)?>
+</span>
+								<img src="<?=get_product_thumb($prod->product_id)?>" title="<?=$_product_title?>" alt="<?=$_product_title?>" data-src="<?=$gallery_thumb?>"/>
+							</a>
+						</li>
+
+						<?php
+                               }
+                           }
+                           ?>
+
+
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="products" style="margin-top: 17px;">
+	<div class="container">
+		<h2 class="section-title">
+			<?=isset($lang['recent_product']) ? $lang['recent_product'] : 'Recent Products'?>
+		</h2>
+		<div class="row">
+			<?php
+			$products = get_products(array('per_page'=>$per_page, 'paged'=>$page));
+
+			if(sizeof($products))
+
+
+
+
+			{
+			foreach($products as $prod)
+			{
+			$product_link = base_url($prod->product_name);
+
+			$product_availability = NULL;
+			$stock_qty = intval(get_product_meta($prod->product_id, 'stock_qty'));
+
+			if(!$stock_qty)
+			{
+			$product_availability = '<div class="availability">Out of Stock</div>';
+			}
+			elseif($stock_qty<=3)
+			{
+			$product_availability = '<div class="availability">Limited Stock</div>';
+			}
+
+			// product price and discount
+			$discount = false;
+
+			$product_price = $sell_price = floatval(get_product_meta($prod->product_id, 'sell_price'));
+
+			$product_discount = get_product_meta($prod->product_id, 'discount_price');
+			$discount_type = get_product_meta($prod->product_id, 'discount_type');
+
+			if($product_discount != 0)
+			{
+			$discount = true;
+
+			$product_discount = $save_money = floatval($product_discount);
+
+			if($discount_type == 'fixed')
+			{
+			$sell_price = ($product_price - $product_discount);
+			}
+			elseif($discount_type == 'percent')
+			{
+			$save_money = ($product_discount / 100) * $product_price;
+			$sell_price = floatval($product_price - $save_money);
+			}
+			}
+
+			$_product_title = strip_tags($prod->product_title);
+			/*
+			$total_rating = $total_review = $avg_rating = null;
+			$reviews = get_review($prod->product_id);
+			if(count($reviews)>0)
+			{
+			foreach($reviews as $review){ $rating[] = $review->rating; }
+			$total_rating = array_sum($rating);
+			$total_review = count($reviews);
+			$avg_rating = number_format((($total_rating) / ($total_review)),2);
+			}
+
+			*/
+
+			$gallery_thumb = '';
+			$gallery_image_meta = get_product_meta($prod->product_id, 'gallery_image');
+			if(!empty($gallery_image_meta))
+			{
+			$gallery_image=explode(",", $gallery_image_meta);
+			if(count($gallery_image)>0)
+			{
+			//$gallery_thumb = crop_image(get_media_path($gallery_image[0]), 215, 180);
+			$gallery_thumb = get_media_path($gallery_image[0]);
+			}
+			}
+			?><div class="col-md-2 col-sm-4 col-xs-6">
+			<div class="pro-box">
+<div class="image">
+	<a class="img" href="<?=$product_link?>">
+						<img   class="img-responsivee" src="<?=get_product_thumb($prod->product_id)?>" title="<?=$_product_title?>" alt="<?=$_product_title?>" data-src="<?=$gallery_thumb?>">
+					</a>
+				</div>
+				<div class="price">
+					<div class="price-inner">
+						<?php
+									if($discount==true)
+									{
+										?><span class="price-old">
+											<?=formatted_price($product_price)?>
+										</span><?php
+									}
+									?>
+						<span class="price-new">
+										<?=formatted_price($sell_price)?>
+									</span>
+					</div>
+				</div>
+				<h3 class="name">
+					<a href="<?=$product_link?>"><?=$_product_title?></a>
+				</h3>
+
+			</div>
+		</div>
+
+			<?php
+				}
+			}
+			?>
+		</div>
+
+
+
+
+
+		<div class="home-pagination mt40 clearfix">
+			<?=create_pagination($base_url, $total_rows, $per_page, true); ?>
+		</div>
+	</div>
+</div>
